@@ -1,6 +1,12 @@
 # YaraRulesGenerator
+
 Generate Yara rules from basic blocks
 
+## Installation
+
+```bash
+python3 -m pip install --user -r requirements.txt
+```
 
 # Example
 
