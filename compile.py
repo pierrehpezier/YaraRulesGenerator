@@ -5,7 +5,10 @@ import sys
 import subprocess
 import tempfile
 
-TEMPDIR = '/dev/shm/'
+if os.name == 'nt':
+    TEMPDIR = os.getenv('TEMP')
+else:
+    TEMPDIR = '/dev/shm/'
 
 class Yarasm(Exception):
     def __init__(self, *args, **kwargs):
