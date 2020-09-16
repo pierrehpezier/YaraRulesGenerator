@@ -1,12 +1,6 @@
 # YaraRulesGenerator
-
 Generate Yara rules from basic blocks
 
-## Installation
-
-```bash
-python3 -m pip install --user -r requirements.txt
-```
 
 # Example
 
@@ -58,5 +52,4 @@ myrule /usr/bin/bash
 
 # TODO
 
-32/64 bits button
 ctrl + Z
