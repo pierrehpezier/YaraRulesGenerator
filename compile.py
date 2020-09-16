@@ -11,6 +11,10 @@ class Yarasm(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
 
+def securedelete(filename):
+    if os.path.isfile(filename):
+        os.unlink(filename)
+
 def compile(code, arch=64):
     sourcefile = tempfile.NamedTemporaryFile(prefix=TEMPDIR, suffix='.asm').name
     binfile = tempfile.NamedTemporaryFile(prefix=TEMPDIR, suffix='.bin').name
@@ -22,14 +26,16 @@ def compile(code, arch=64):
     try:
         process = subprocess.run(['nasm', '-fbin', sourcefile, '-o', binfile], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except FileNotFoundError:
+        securedelete(sourcefile)
+        if os.path.isfile(binfile):
+            securedelete(binfile)
         raise Yarasm('Unable to find nasm. Please install nasm')
+    securedelete(sourcefile)
     if process.stderr:
+        securedelete(binfile)
         raise Yarasm(process.stderr)
-    try: os.unlink(sourcefile)
-    except FileNotFoundError: pass
     retval = open(binfile, 'rb').read()
-    try: os.unlink(binfile)
-    except FileNotFoundError: pass
+    securedelete(binfile)
     return retval
 
 def decompile(data, arch=64):
@@ -38,11 +44,12 @@ def decompile(data, arch=64):
     try:
         process = subprocess.run(['ndisasm', '-b', str(arch), binfile], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except FileNotFoundError:
+        securedelete(binfile)
         raise Yarasm('Unable to find ndisasm. Please install ndisasm')
     if process.stderr:
+        securedelete(binfile)
         raise Yarasm(process.stderr)
-    try: os.unlink(binfile)
-    except FileNotFoundError: pass
+    securedelete(binfile)
     return str(process.stdout, 'UTF-8').strip('\n')
 
 if __name__ == '__main__':
